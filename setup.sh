@@ -38,7 +38,7 @@ function syscheck {
 function whichdisk {
   # Selecting the target for the installation.
   PS3="Select the disk where Arch Linux is going to be installed: "
-  select ENTRY in $(lsblk -dpnoNAME,SIZE|grep -P "/dev/sd|nvme|vd");
+  select ENTRY in $(lsblk -dpnoNAME|grep -P "/dev/sd|nvme|vd");
   do
     DISK=$ENTRY
     echo "Installing Arch Linux on $DISK."
