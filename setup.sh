@@ -12,7 +12,7 @@ ESP=""
 ROOT=""
 HOME=""
 
-#Functions (some written by me!)
+#Functions
 function syscheck {
 	if [ -e /sys/firmware/efi/efivars ]
                 then
@@ -105,12 +105,11 @@ function standard_parts {
 }
 
 function mount_partitions {
-	#Unmount all partitions on /mnt (just in case there are any)
-    umount -R /mnt
+	#Unmount all partitions on /mnt (commented out for now)
+    #umount -R /mnt
     
+    mount "$ROOT" /mnt
     mkdir -p /mnt/boot
-
-	mount "$ROOT" /mnt
 	mount "$ESP" /mnt/boot
 
 	if $HOME != ""
