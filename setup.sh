@@ -12,7 +12,9 @@ ESP=""
 ROOT=""
 HOME=""
 
-#Functions
+# Functions
+
+# Checks system for compatibility with script
 function syscheck {
 	if [ -e /sys/firmware/efi/efivars ]
                 then
@@ -35,6 +37,7 @@ function syscheck {
 
 }
 
+# Select the install disk
 function whichdisk {
   # Selecting the target for the installation.
   PS3="Select the disk where Arch Linux is going to be installed: "
@@ -46,6 +49,7 @@ function whichdisk {
   done
 }
 
+# Wipe partition table
 function wipesys {
   # Deleting old partition scheme.
   read -p "This will delete the current partition table on $DISK. Do you agree [y/N]? " response
@@ -60,14 +64,15 @@ function wipesys {
   fi
 }
 
+# Create partitions on new partition table (includes home partition)
 function homepart_layout {
   # Creating a new partition scheme including home partition.
   echo "Creating new partition scheme on $DISK."
   parted -s $DISK \
     mklabel gpt \
-    mkpart boot 1MiB 513MiB \
-    mkpart root 513MiB 51712MiB \
-    mkpart home 51713MiB 100% \
+    mkpart ESP 1MiB 513MiB \
+    mkpart Root 513MiB 51712MiB \
+    mkpart Home 51713MiB 100% \
 
 	# Formatting the ESP as FAT32.
 	ESP="$DISK"1
@@ -84,13 +89,13 @@ function homepart_layout {
     mkfs.ext4 "$HOME" &>/dev/null
 }
 
+# Create partitions on new partition table (excludes home partition)
 function standard_parts {
-  # Creating a new partition scheme without home partition.
   echo "Creating new partition scheme on $DISK."
   parted -s "$DISK" \
     mklabel gpt \
-    mkpart boot 1MiB 513MiB \
-    mkpart root 513MiB 100% \
+    mkpart ESP 1MiB 513MiB \
+    mkpart Root 513MiB 100% \
 
 	# Formatting the ESP as FAT32.
 	ESP="$DISK"1
@@ -104,6 +109,7 @@ function standard_parts {
     mkfs.ext4 "$ROOT" &>/dev/null
 }
 
+# Mount partitions for installation
 function mount_partitions {
 	#Unmount all partitions on /mnt (commented out for now)
     #umount -R /mnt
@@ -120,9 +126,7 @@ function mount_partitions {
 }
 
 
-
-
-
+# Select how to handle internet post-install
 function network_setup {
     echo "Network utilities:"
     echo "1) IWD — iNet wireless daemon is a wireless daemon for Linux written by Intel (WiFi-only)."
@@ -155,6 +159,7 @@ function network_setup {
     esac
 }
 
+# Select what kernel to install
 function kernel_selector {
     echo "List of kernels:"
     echo "1) Stable — Vanilla Linux kernel and modules."
@@ -177,12 +182,14 @@ function kernel_selector {
     esac
 }
 
+# Clear tty for cleanliness
+clear
+
 # Begins install script with warnings but gives exit option
 echo "This script makes a lot of assumptions, but this was meant as a learning experience and was never intended to be put into practice."
 echo "What this script assumes:
 	- A network connection is established
 	- The defaut keyboard layout is being used"
-
 
 while true; do
 	read -p "Continue? (Yy/Nn): " yn
@@ -263,10 +270,6 @@ arch-chroot /mnt /bin/bash -e <<EOF
 	# Enabling Reflector timer.
 	echo "Enabling Reflector."
 	systemctl enable reflector.timer &>/dev/null
-
-    # Setting root password.
-    echo "Setting root password."
-    passwd
 EOF
 
 
