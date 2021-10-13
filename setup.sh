@@ -118,7 +118,7 @@ function mount_partitions {
     mkdir -p /mnt/boot
 	mount "$ESP" /mnt/boot
 
-	if $HOME != ""
+	if [[$HOME != ""]]
 	then
 		mkdir -p /mnt/home
 		mount "$HOME" /mnt/home
@@ -186,10 +186,8 @@ function kernel_selector {
 clear
 
 # Begins install script with warnings but gives exit option
-echo "This script makes a lot of assumptions, but this was meant as a learning experience and was never intended to be put into practice."
-echo "What this script assumes:
-	- A network connection is established
-	- The defaut keyboard layout is being used"
+echo "This script is a work in progress, but is at this point mostly functional."
+echo "This means that there may be some issues."
 
 while true; do
 	read -p "Continue? (Yy/Nn): " yn
@@ -203,7 +201,7 @@ done
 
 # Installation steps
 #Ensures system clock is accurate
-timedatectl set-ntp true
+timedatectl set-ntp true 
 syscheck
 whichdisk
 
@@ -272,6 +270,22 @@ arch-chroot /mnt /bin/bash -e <<EOF
 	systemctl enable reflector.timer &>/dev/null
 EOF
 
+
+# Setting root password and new superuser privileged login
+arch-chroot /mnt << EOF
+    # Set root password
+    passwd
+    
+    # New superuser login
+    echo "It is standard to create a new login to avoid using the elevated privileges of the root account."
+    echo "Logging in as the root user is insecure, so a superuser account \n is set so root privileges can still be securely accessed when needed."
+    
+    read -p "Please enter name for the superuser account: " username
+    echo "Adding superuser $username with root privilege."
+    useradd -m $username
+    usermod -aG wheel $username
+    echo "$username ALL=(ALL) ALL" >> /etc/sudoers.d/$username
+EOF
 
 # Finishing up
 echo "Done, you may now wish to reboot (further changes can be done by chrooting into /mnt)."
