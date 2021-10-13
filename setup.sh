@@ -118,7 +118,7 @@ function mount_partitions {
     mkdir -p /mnt/boot
 	mount "$ESP" /mnt/boot
 
-	if [$HOME != ""]>
+	if [$HOME != ""]
 	then
 		mkdir -p /mnt/home
 		mount "$HOME" /mnt/home
