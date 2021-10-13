@@ -118,7 +118,7 @@ function mount_partitions {
     mkdir -p /mnt/boot
 	mount "$ESP" /mnt/boot
 
-	if [[$HOME != ""]]
+	if [$HOME != ""]>
 	then
 		mkdir -p /mnt/home
 		mount "$HOME" /mnt/home
@@ -231,6 +231,9 @@ genfstab -U /mnt >> /mnt/etc/fstab
 read -p "Please enter the hostname: " hostname
 echo "$hostname" > /mnt/etc/hostname
 
+# Set superuser name variable
+read -p "Please enter name for the superuser account: " username
+
 # Setting up locales.
 read -p "Please insert the locale you use (format: xx_XX): " locale
 echo "$locale.UTF-8 UTF-8"  > /mnt/etc/locale.gen
@@ -243,6 +246,7 @@ cat > /mnt/etc/hosts <<EOF
 ::1         localhost
 127.0.1.1   $hostname.localdomain   $hostname
 EOF
+
 
 # Configuring the system.    
 arch-chroot /mnt /bin/bash -e <<EOF
@@ -280,7 +284,6 @@ arch-chroot /mnt << EOF
     echo "It is standard to create a new login to avoid using the elevated privileges of the root account."
     echo "Logging in as the root user is insecure, so a superuser account \n is set so root privileges can still be securely accessed when needed."
     
-    read -p "Please enter name for the superuser account: " username
     echo "Adding superuser $username with root privilege."
     useradd -m $username
     usermod -aG wheel $username
