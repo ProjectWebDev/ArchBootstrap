@@ -231,9 +231,6 @@ genfstab -U /mnt >> /mnt/etc/fstab
 read -p "Please enter the hostname: " hostname
 echo "$hostname" > /mnt/etc/hostname
 
-# Set superuser name variable
-read -p "Please enter name for the superuser account: " username
-
 # Setting up locales.
 read -p "Please insert the locale you use (format: xx_XX): " locale
 echo "$locale.UTF-8 UTF-8"  > /mnt/etc/locale.gen
@@ -276,15 +273,25 @@ EOF
 
 
 # Setting root password and new superuser privileged login
-arch-chroot /mnt << EOF
-    # Set root password
-    passwd
+echo "Setting root password."
+arch-chroot /mnt /bin/passwd
     
-    # New superuser login
-    echo "It is standard to create a new login to avoid using the elevated privileges of the root account."
-    echo "Logging in as the root user is insecure, so a superuser account \n is set so root privileges can still be securely accessed when needed."
-    
-    echo "Adding superuser $username with root privilege."
+
+
+# New superuser login
+echo "It is standard to create a new login to avoid using the elevated privileges of the root account."
+echo "Logging in as the root user is insecure, so a superuser account \n is set so root privileges can still be securely accessed when needed."
+
+# Set superuser name
+read -p "Please enter name for the superuser account: " username
+
+# Set superuser password
+echo "Enter a password for ${username}."
+arch-chroot /mnt /bin/passwd "$username"
+
+echo "Adding superuser ${$username}."
+
+arch-chroot /mnt << EOF 
     useradd -m $username
     usermod -aG wheel $username
     echo "$username ALL=(ALL) ALL" >> /etc/sudoers.d/$username
