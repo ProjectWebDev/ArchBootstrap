@@ -122,6 +122,8 @@ function mount_partitions {
 	then
 		mkdir -p /mnt/home
 		mount "$HOME" /mnt/home
+    else
+        break
 	fi
 }
 
