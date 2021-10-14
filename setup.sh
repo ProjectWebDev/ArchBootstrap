@@ -285,10 +285,6 @@ echo "Logging in as the root user is insecure, so a superuser account \n is set 
 # Set superuser name
 read -p "Please enter name for the superuser account: " username
 
-# Set superuser password
-echo "Enter a password for ${username}."
-arch-chroot /mnt /bin/passwd "$username"
-
 echo "Adding superuser ${$username}."
 
 arch-chroot /mnt << EOF 
@@ -296,6 +292,10 @@ arch-chroot /mnt << EOF
     usermod -aG wheel $username
     echo "$username ALL=(ALL) ALL" >> /etc/sudoers.d/$username
 EOF
+
+# Set superuser password
+echo "Enter a password for ${username}."
+arch-chroot /mnt /bin/passwd "$username"
 
 # Finishing up
 echo "Done, you may now wish to reboot (further changes can be done by chrooting into /mnt)."
