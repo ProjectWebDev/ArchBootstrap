@@ -118,7 +118,7 @@ function mount_partitions {
     mkdir -p /mnt/boot
 	mount "$ESP" /mnt/boot
 
-	if [ $HOME == "${DISK}3" ]
+	if [[ $HOME == "${DISK}3" ]]
 	then
 		mkdir -p /mnt/home
 		mount "$HOME" /mnt/home
@@ -285,7 +285,7 @@ echo "Logging in as the root user is insecure, so a superuser account \n is set 
 # Set superuser name
 read -p "Please enter name for the superuser account: " username
 
-echo "Adding superuser ${$username}."
+echo "Adding superuser ${username}."
 
 arch-chroot /mnt << EOF 
     useradd -m $username
