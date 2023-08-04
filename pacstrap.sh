@@ -4,7 +4,7 @@ echo "This script makes a lot of assumptions, but this was meant as a learning e
 echo "What this script assumes:
 	- A network connection is established
 	- The defaut keyboard layout is being used
-	- The system has already been manually been partitioned and mounted"
+	- The system has already been manually partitioned and mounted"
 
 echo "This script assumes that the user is using the default keyboard layout. \n
 If you wish to change the layout you must exit this script first."
